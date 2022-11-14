@@ -3,6 +3,7 @@
 \usepackage[]{geometry} 
 \usepackage{amsmath}  
 \usepackage{graphicx} 
+\usepackage{amsthm}
 
 \newtheorem{thm}{Theorem}
 \newtheorem{defn}[thm]{Definition}
@@ -17,13 +18,10 @@
 
     \section{Introduction}
     Rather than providing explicit proofs for theorems in Coq, we can test them using QuickChick and then assume that they hold if QuickChick cannot disprove them. This functionality is offered in the form of "Conjectures": 
-    \begin{definition}
-        A \textbf{Conjecture} is the QuickChick equivalent of a normal Coq axiom.
-    \end{definition}
+    A \textbf{Conjecture} is the QuickChick equivalent of a normal Coq axiom.
     $$ Conjecture <name> : <Prop you wish to check>.$$ 
     This is essentially syntactic sugar for:
     $$ Theorem <name> : <Prop you wish to check>. Admitted.$$
-
 
     \section{TypeClasses}
 
