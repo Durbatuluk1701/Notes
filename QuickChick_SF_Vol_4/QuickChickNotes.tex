@@ -54,10 +54,10 @@
     \begin{enumerate}
         \item \textbf{Class Definitions}: Used to create an interface that Types must instantiate
         \begin{minted}{coq}
-            Class <CLASS_NAME> (...ARGS) : <RETURN_TYPE> := 
-            {
-                <FIELD_NAME> : <TYPE_SIGNATURE> ; 
-            }.
+    Class <CLASS_NAME> (...ARGS) : <RETURN_TYPE> := 
+    {
+        <FIELD_NAME> : <TYPE_SIGNATURE> ; 
+    }.
         \end{minted} 
         
         \begin{itemize}
@@ -67,10 +67,10 @@
 
         \item \textbf{Instantiations}: The actual instantiaion of a Class with arguments and obligations fulfilled
         \begin{minted}{coq}
-            <LOCALITY> Instance <INSTANCE_NAME> : <CLASS_NAME> (...ARGS) :=
-            {
-                <FIELD_NAME> : <DEFINITION> ;
-            }.
+    <LOCALITY> Instance <INSTANCE_NAME> : <CLASS_NAME> (...ARGS) :=
+    {
+        <FIELD_NAME> : <DEFINITION> ;
+    }.
         \end{minted}
         \begin{itemize}
             \item The DEFINITION must fulfill the TYPE\_SIGNATURE of the corresponding field
@@ -118,6 +118,44 @@
     \end{itemize}
 
     \section{QuickChick}
+    The Typeclasses that QuickChick uses are 
+    \begin{itemize}
+      \item Show: For printing out the value as a string
+      \item Dec (Decidable Equality): Proving that two values are equal
+      \item Gen (or GenSized): For controlling the generation of a type, requires a definition that outputs the "G" of a type
+      \item Shrink: Helps minimize the size of counter-examples
+      \item Arbitrary: Packages Gen and Shrink Typeclasses together
+    \end{itemize}
+
+    Generators are the most important feature of property based testing. In QuickChick the generators are somewhat complicated to understand, but fairly easy to use. For that reason, I suggest reading the QC chapter in the QuickChick textbook for a complete understanding; although I will provide a brief overview here.
+
+    The \textbf{G Monad} is the base of all random generation in QuickChick. A generator for a given type "T" will belong to the type "G T". "G T" is the set of functions that take a random input seed (provided by QuickChick) and output an element of "T". We can build "G T" using a monadic style in Coq that comes as a built in import with QuickChick.
+    \begin{minted}{coq}
+      (* Roughly copied from copland-avm/CopParserQC.v *)
+      From QuickChick Require Import QuickChick
+      Import QcNotation. 
+      Require Export ExtLib.Structures.Monads.
+      Export MonadNotation.
+      (* Additional definitions and imports *)
+
+      (*** G ASP *)
+      Definition gASP : G ASP :=
+        oneOf [
+          (ret NULL) ; (ret CPY) ; (ret SIG) ; (ret HSH) ;
+          (par <- arbitrary ;; ret (ASPC ALL EXTD par))
+        ].
+    \end{minted}
+    Here we use the monad style to assign/bind ("$<$-"), sequence (";;"), and return ("ret").
+    We also use the "arbitrary" Typeclass to generate an arbitrary (or random) set of parameters to ASPC. \\
+    We also can use some tools provided by QuickChick to construct \textbf{G}:
+    \begin{itemize}
+      \item oneOf (l : list G A) := returns a single one of the elements from the list. All at the same probability of being returned
+      \item freq (l : list (nat * G A)) := returns a single element from the list, but this time the probability is based upon the number in the pair \\
+      (higher number $\implies$ higher probability of being returned)
+      \item choose (p : (nat * nat)) := returns a random number in between the lower bound and upper bound given by the pair (fst = lower, snd = upper).
+    \end{itemize}
+    Others also exist, but I have not had to use them so they are omitted (but available in the QuickChick textbook $>$ QuickChickInterface chapter).
+
   
     \section{Summary and Use}
     Hopefully the benefits of QuickChick are now made clear. 
@@ -150,7 +188,7 @@
       Conjecture all_trees_depth : forall (p : Plc) (tl tr : Tree Plc),
         longest_depth tl < longest_depth (Node p tl tr).
     \end{minted}
-    The steps we would have to take before we can actually "QuickChick" our Conjecture would be to instantiate the following Typeclasses (typically in order): 
+    The steps we would have to take before we can actually "QuickChick" our Conjecture would be to instantiate the following (typically in order): 
     \begin{enumerate}
       \item Show
       \item Dec (Decidable Equality)
@@ -177,7 +215,6 @@
         *** Failed after 1 tests and 0 shrinks. (0 discards)
       *)
     \end{minted}
-
     \textbf{Important Notes}:
     \begin{itemize}
       \item QuickChick will only be as powerful as the generator you create. If your generators never create random corner cases, then QuickChick will never catch them.

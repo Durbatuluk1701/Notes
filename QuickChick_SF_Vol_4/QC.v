@@ -98,3 +98,8 @@ Derive Arbitrary for Tree.
 
 (* Set Typeclasses Debug. *)
 QuickChick all_trees_depth.
+
+Definition t := (1,2).
+Compute (snd t).
+
+Print liftM.
