@@ -4,6 +4,8 @@
 \usepackage{amsmath}  
 \usepackage{graphicx} 
 \usepackage{amsthm}
+\usepackage{hyperref}
+\usepackage{minted}
 
 \newtheorem{thm}{Theorem}
 \newtheorem{defn}[thm]{Definition}
@@ -13,17 +15,100 @@
 \title{\textbf{QuickChick Quick Start}}
 \author{Will Thomas}
 
+\usemintedstyle{tango}
+
+
 \begin{document}
     \maketitle
 
     \section{Introduction}
+    I want to start off by giving an idea on how to install QuickChick. The best way I have found that minimizes the installation and maintenance is using \emph{opam}. More info can be found at \href{https://github.com/QuickChick/QuickChick#installation}{QuickChick Github}.
+
     Rather than providing explicit proofs for theorems in Coq, we can test them using QuickChick and then assume that they hold if QuickChick cannot disprove them. This functionality is offered in the form of "Conjectures": 
     A \textbf{Conjecture} is the QuickChick equivalent of a normal Coq axiom.
-    $$ Conjecture <name> : <Prop you wish to check>.$$ 
+    \begin{minted}{coq}
+        Conjecture <NAME> : <PROP>.
+    \end{minted}
     This is essentially syntactic sugar for:
-    $$ Theorem <name> : <Prop you wish to check>. Admitted.$$
+    \begin{minted}{coq}
+        Theorem <NAME> : <PROP>. Admitted.
+    \end{minted}
+    We would then use QuickChick to test our Conjecture via the following command (in Coq):
+    \begin{minted}{coq}
+        QuickChick <NAME>.
+    \end{minted}
+    There are 4 main ingredients to Property-Based Testing:
+    \begin{enumerate}
+        \item Executable Properties: We need our properties to be actually testable/executable
+        \item Generators: We want well defined generators to create random tests
+        \item Printers: For showing failing examples
+        \item Shrinkers: To help find the smallest failing examples for easier debugging
+    \end{enumerate}
 
     \section{TypeClasses}
+    TypeClasses are one of the coolest features I have learned about in Coq. They are roughly equivalent to interfaces where we can know certain things about a type based on its implementing a TypeClass. 
+    This will be a brief introduction to TypeClasses as they have so many features they cannot all be covered here.
+    \\~\\
+    There are 2 fundamental parts to TypeClasses:
+    \begin{enumerate}
+        \item \textbf{Class Definitions}: Used to create an interface that Types must instantiate
+        \begin{minted}{coq}
+            Class <CLASS_NAME> (...ARGS) : <RETURN_TYPE> := 
+            {
+                <FIELD_NAME> : <TYPE_SIGNATURE> ; 
+            }.
+        \end{minted} 
+        
+        \begin{itemize}
+            \item Typically the RETURN\_TYPE can be omitted (it will typically be inferred properly by Coq)
+            \item You can include any amount of fields in the class definitions
+        \end{itemize} 
+
+        \item \textbf{Instantiations}: The actual instantiaion of a Class with arguments and obligations fulfilled
+        \begin{minted}{coq}
+            <LOCALITY> Instance <INSTANCE_NAME> : <CLASS_NAME> (...ARGS) :=
+            {
+                <FIELD_NAME> : <DEFINITION> ;
+            }.
+        \end{minted}
+        \begin{itemize}
+            \item The DEFINITION must fulfill the TYPE\_SIGNATURE of the corresponding field
+            \item Every field must be instantiation (you cannot leave any fields out)
+            \item It is sometimes helpful to create instances in the \emph{prover} to leverage automation
+        \end{itemize}
+    \end{enumerate}
+    \textbf{Example 2.1} The "Show" TypeClass \\
+    \begin{minted}{coq}
+        Class Show A : Type :=
+        {
+            show    : A -> string
+        }.
+    \end{minted}
+    \begin{minted}{coq}
+        Local Instance showBool : Show bool :=
+        {
+            show    := fun b : bool => if b then "true" else "false"
+        }.
+    \end{minted}
+    or equivalently
+    \begin{minted}{coq}        
+        Local Instance showBool' : Show bool.
+        constructor; intros b; destruct b eqn:B.
+        - (* b = true *) apply "true".
+        - (* b = false *) apply "false".
+        Defined.
+    \end{minted}
+    We can then use the "show" function on any type where the \emph{TypeClass Show} has a valid \emph{Instantiation} in the Environment
+
+    Let us assume for a moment we have instantiated Show for Nats, bools, and strings (and assume all the obvious implementations for the corresponding "show" functions). 
+    We can then make the following calls
+    \begin{minted}{coq}
+        Compute (show 21) (* "21" *)
+        Compute (show true) (* "true" *)
+        Compute (show "hello") (* "hello" *)
+    \end{minted}
+
+
 
     \section{QuickChick}
 
