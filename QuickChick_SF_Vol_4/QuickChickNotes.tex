@@ -6,6 +6,7 @@
 \usepackage{amsthm}
 \usepackage{hyperref}
 \usepackage{minted}
+\usepackage[shortlabels]{enumitem}
 
 \newtheorem{thm}{Theorem}
 \newtheorem{defn}[thm]{Definition}
@@ -45,11 +46,11 @@
         \item Shrinkers: To help find the smallest failing examples for easier debugging
     \end{enumerate}
 
-    \section{TypeClasses}
-    TypeClasses are one of the coolest features I have learned about in Coq. They are roughly equivalent to interfaces where we can know certain things about a type based on its implementing a TypeClass. 
-    This will be a brief introduction to TypeClasses as they have so many features they cannot all be covered here.
+    \section{Typeclasses}
+    Typeclasses are one of the coolest features I have learned about in Coq. They are roughly equivalent to interfaces where we can know certain things about a type based on its implementing a Typeclass. 
+    This will be a brief introduction to Typeclasses as they have so many features they cannot all be covered here.
     \\~\\
-    There are 2 fundamental parts to TypeClasses:
+    There are 2 fundamental parts to Typeclasses:
     \begin{enumerate}
         \item \textbf{Class Definitions}: Used to create an interface that Types must instantiate
         \begin{minted}{coq}
@@ -77,7 +78,7 @@
             \item It is sometimes helpful to create instances in the \emph{prover} to leverage automation
         \end{itemize}
     \end{enumerate}
-    \textbf{Example 2.1} The "Show" TypeClass \\
+    \textbf{Example 2.1} The "Show" Typeclass \\
     \begin{minted}{coq}
         Class Show A : Type :=
         {
@@ -98,7 +99,7 @@
         - (* b = false *) apply "false".
         Defined.
     \end{minted}
-    We can then use the "show" function on any type where the \emph{TypeClass Show} has a valid \emph{Instantiation} in the Environment
+    We can then use the "show" function on any type where the \emph{Typeclass Show} has a valid \emph{Instantiation} in the Environment
 
     Let us assume for a moment we have instantiated Show for Nats, bools, and strings (and assume all the obvious implementations for the corresponding "show" functions). 
     We can then make the following calls
@@ -107,13 +108,83 @@
         Compute (show true) (* "true" *)
         Compute (show "hello") (* "hello" *)
     \end{minted}
-
-
+    This is because the function "show" has been overloaded, and the proper definition (and corresponding Typeclass)
+    will be inferred and applied by Coq. \\
+    Other features of Typeclasses to look for (but not to be included here) are:
+    \begin{itemize}
+        \item Class Hierarchies
+        \item Implicit Generalization
+        \item Typeclass automation tools
+    \end{itemize}
 
     \section{QuickChick}
-
-    \section{Case Study}
-
+  
     \section{Summary and Use}
+    Hopefully the benefits of QuickChick are now made clear. 
+    We can easily check propositions to make sure they do not have obvious counter-examples.
+    From there, we diagnose the problem: is this a case of a poorly constructed definition or an actually false proposition? 
+    Iterate and repeat until QuickChick can find no counter-examples, then attempt a proof.
+
+    The most foolproof way I have found of doing this is to start with the smallest structure that will be used within your proposition, create the necessary Typeclasses, test the Typeclasses, then move up one level and repeat. \\
+    For example if we had the following (buggy) spec:
+    \begin{minted}{coq}     
+      Inductive Tree (A : Type) :=
+      | Leaf : Tree A 
+      | Node : A -> Tree A -> Tree A -> Tree A.
+      Arguments Leaf {A}.
+      Arguments Node {A} _ _ _.
+
+      Inductive Plc :=
+      | Plc_Str : string -> Plc
+      | Plc_nat : nat -> Plc.
+
+      Fixpoint longest_depth {A : Type} (t : Tree A) : nat :=
+        match t with
+        | Leaf => 0
+        | Node a tl tr => 
+            let l_depth := longest_depth tl in
+            let r_depth := longest_depth tr in
+            if (Nat.leb l_depth r_depth) then r_depth else l_depth
+        end.
+      
+      Conjecture all_trees_depth : forall (p : Plc) (tl tr : Tree Plc),
+        longest_depth tl < longest_depth (Node p tl tr).
+    \end{minted}
+    The steps we would have to take before we can actually "QuickChick" our Conjecture would be to instantiate the following Typeclasses (typically in order): 
+    \begin{enumerate}
+      \item Show
+      \item Dec (Decidable Equality)
+      \item G
+      \item Gen (or GenSized)
+      \item Shrink
+      \item Arbitrary
+    \end{enumerate}
+    And do this for each of the following Types (also usually in order):
+    \begin{enumerate}
+      \item ascii
+      \item String
+      \item Plc
+      \item Tree
+    \end{enumerate}
+    Then we can execute 
+    \begin{minted}{coq}
+      QuickChick all_trees_depth
+      (*
+        QuickChecking all_trees_depth
+        Plc_nat 0
+        Leaf
+        Leaf
+        *** Failed after 1 tests and 0 shrinks. (0 discards)
+      *)
+    \end{minted}
+
+    \textbf{Important Notes}:
+    \begin{itemize}
+      \item QuickChick will only be as powerful as the generator you create. If your generators never create random corner cases, then QuickChick will never catch them.
+      \item If you use automated derivation (via "Derive" commands), make sure you test that the derivation makes sense and has not just created an overly simplified Typeclass instance.
+      \item I personally believe "Shrink" is the hardest Typeclass to create (and also has certain bugs in QuickChick related to it). If you are struggling to create a Shrink, use the trivial Shrink and move on.
+      \item "Set Typeclasses Debug" is a very helpful command to locate what Typeclasses cannot be found when you cannot execute the "QuickChick" command.
+    \end{itemize}
+
 
 \end{document}
