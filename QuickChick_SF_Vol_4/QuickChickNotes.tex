@@ -74,7 +74,7 @@
         \end{minted}
         \begin{itemize}
             \item The DEFINITION must fulfill the TYPE\_SIGNATURE of the corresponding field
-            \item Every field must be instantiation (you cannot leave any fields out)
+            \item Every field must be instantiated (you cannot leave any fields out)
             \item It is sometimes helpful to create instances in the \emph{prover} to leverage automation
         \end{itemize}
     \end{enumerate}
@@ -154,11 +154,19 @@
       (higher number $\implies$ higher probability of being returned)
       \item choose (p : (nat * nat)) := returns a random number in between the lower bound and upper bound given by the pair (fst = lower, snd = upper).
     \end{itemize}
-    Others also exist, but I have not had to use them so they are omitted (but available in the QuickChick textbook $>$ QuickChickInterface chapter).
+    Others also exist, but I have not had to use them so they are omitted (but available in the QuickChick textbook $>$ QuickChickInterface chapter). \\
+    \textbf{Power Tools}: \\
+    The most powerful feature of QuickChick is the automatic derivation of Typeclasses for many Types.
+    This can be leveraged by using 
+    \begin{minted}{coq}
+      Derive <TYPECLASS> for <TYPE>.
+    \end{minted}
+    Which will automatically create the given Typeclass for the Type if possible. 
+    You can use derive with the following options (and more less commonly used ones): Show, Shrink, Arbitrary.
 
   
     \section{Summary and Use}
-    Hopefully the benefits of QuickChick are now made clear. 
+    Hopefully the benefits of QuickChick are clear. 
     We can easily check propositions to make sure they do not have obvious counter-examples.
     From there, we diagnose the problem: is this a case of a poorly constructed definition or an actually false proposition? 
     Iterate and repeat until QuickChick can find no counter-examples, then attempt a proof.
@@ -214,6 +222,20 @@
         Leaf
         *** Failed after 1 tests and 0 shrinks. (0 discards)
       *)
+    \end{minted}
+    Looking back at our definition, we notice that "longest\_depth" is incorrectly defined. With this fix we will succeed
+    \begin{minted}{coq}
+      Fixpoint longest_depth {A : Type} (t : Tree A) : nat :=
+        match t with
+        | Leaf => 0
+        | Node a tl tr => 
+            let l_depth := longest_depth tl in
+            let r_depth := longest_depth tr in
+            if (Nat.leb l_depth r_depth) then 1 + r_depth else 1 + l_depth
+        end.
+
+      QuickChick all_trees_depth
+      (* +++ Passed 10000 tests (0 discards) *)
     \end{minted}
     \textbf{Important Notes}:
     \begin{itemize}

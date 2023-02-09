@@ -80,7 +80,7 @@ Fixpoint longest_depth {A : Type} (t : Tree A) : nat :=
   | Node a tl tr => 
       let l_depth := longest_depth tl in
       let r_depth := longest_depth tr in
-      if (Nat.leb l_depth r_depth) then r_depth else l_depth
+      if (Nat.leb l_depth r_depth) then 1 + r_depth else 1 + l_depth
   end.
 
 Conjecture all_trees_depth : forall (p : Plc) (tl tr : Tree Plc),
@@ -98,8 +98,3 @@ Derive Arbitrary for Tree.
 
 (* Set Typeclasses Debug. *)
 QuickChick all_trees_depth.
-
-Definition t := (1,2).
-Compute (snd t).
-
-Print liftM.
