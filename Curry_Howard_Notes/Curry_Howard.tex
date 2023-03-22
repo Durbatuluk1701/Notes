@@ -1,0 +1,270 @@
+\documentclass[12pt]{report}
+\usepackage[]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{coqdoc}
+\usepackage{amsmath,amssymb}
+\usepackage{url}
+
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% This file has been automatically generated with the command
+%% coqdoc --latex Curry_Howard.v 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\coqlibrary{Curry Howard}{Library }{Curry\_Howard}
+
+\begin{coqdoccode}
+\coqdocnoindent
+\coqdockw{Require} \coqdockw{Import} \coqdocvar{Setoid}.\coqdoceol
+\end{coqdoccode}
+  First, let us start with a small definition of
+  what it means for a ``Set/Type'' to be inhabited.
+
+
+  Let us also recall that we can hoist ``Set/Type''
+  to ``Prop'' (in some sense the very essence of Curry-Howard)
+  with the help of Setoid library
+
+\begin{coqdoccode}
+\coqdocnoindent
+\coqdockw{Definition} \coqdocvar{inhabited} (\coqdocvar{A} : \coqdockw{Set}) := \coqdoctac{\ensuremath{\exists}} \coqdocvar{a} : \coqdocvar{A}, \coqdocvar{True}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Example} \coqdocvar{exists\_nat} : \coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} \coqdocvar{nat}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexists}; \coqdoctac{eauto}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} 1.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Example} \coqdocvar{exists\_string} : \coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} \coqdocvar{bool}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eexists}; \coqdoctac{eauto}.\coqdoceol
+\coqdocnoindent
+\coqdoctac{eapply} \coqdocvar{false}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{not\_exists\_false} :\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{\lnot} \coqdocvar{inhabited} \coqdocvar{False}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{intros} \coqdocvar{HC}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{inversion} \coqdocvar{HC}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{eapply} \coqdocvar{x}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+  Here, we show how standard propositional logic
+  holds for our inhabited definition
+
+\begin{coqdoccode}
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{both\_ways\_split\_inhabited} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{Q} : \coqdockw{Prop}),\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} (\coqdocvar{P} \ensuremath{\land} \coqdocvar{Q}) \ensuremath{\leftrightarrow}\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} \coqdocvar{P} \ensuremath{\land} \coqdocvar{inhabited} \coqdocvar{Q}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{split}; \coqdoctac{intros}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{inversion} \coqdocvar{H}; \coqdoctac{destruct} \coqdocvar{x}; \coqdoctac{split}; \coqdoctac{cbv}; \coqdoctac{eauto}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{destruct} \coqdocvar{H}. \coqdoctac{inversion} \coqdocvar{H}; \coqdoctac{inversion} \coqdocvar{H0}; \coqdoctac{cbv}; \coqdoctac{eexists}; \coqdoctac{eauto}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{either\_way\_split\_inhabited} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{Q} : \coqdockw{Prop}),\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} (\coqdocvar{P} \ensuremath{\lor} \coqdocvar{Q}) \ensuremath{\leftrightarrow}\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} \coqdocvar{P} \ensuremath{\lor} \coqdocvar{inhabited} \coqdocvar{Q}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{split}; \coqdoctac{intros}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{inversion} \coqdocvar{H}; \coqdoctac{destruct} \coqdocvar{x}; \coqdoctac{cbv}; \coqdoctac{eauto}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{destruct} \coqdocvar{H}; \coqdoctac{inversion} \coqdocvar{H}; \coqdoctac{cbv}; \coqdoctac{eexists}; \coqdoctac{eauto}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{not\_exists\_inhabited\_not} :\coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{P} : \coqdockw{Prop}),\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{\lnot} \coqdocvar{P} \ensuremath{\leftrightarrow}\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} (\~{} \coqdocvar{P}).\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{split}; \coqdoctac{intros}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{cbv}; \coqdoctac{eauto}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{inversion} \coqdocvar{H}; \coqdoctac{eauto}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Example} \coqdocvar{inhabitation\_preservation} :\coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{C} : \coqdockw{Prop}),\coqdoceol
+\coqdocindent{1.00em}
+(\coqdocvar{P} \ensuremath{\rightarrow} \coqdocvar{C}) \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} \coqdocvar{P} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} \coqdocvar{C}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{intros}. \coqdoctac{inversion} \coqdocvar{H0}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{cbv}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{eexists}; \coqdoctac{eauto}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Example} \coqdocvar{not\_inhabitation\_reverse} :\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{\lnot} (\coqdoceol
+\coqdocindent{2.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{C} : \coqdockw{Prop}),\coqdoceol
+\coqdocindent{2.00em}
+(\coqdocvar{P} \ensuremath{\rightarrow} \coqdocvar{C}) \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{2.00em}
+\coqdocvar{inhabited} \coqdocvar{C} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{2.00em}
+\coqdocvar{inhabited} \coqdocvar{P}\coqdoceol
+\coqdocindent{1.00em}
+).\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{intros} \coqdocvar{HC}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{pose} \coqdocvar{proof} (\coqdocvar{HC} \coqdocvar{False} \coqdocvar{True}).\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{assert} (\coqdocvar{False} \ensuremath{\rightarrow} \coqdocvar{True}). \coqdoctac{eauto}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{assert} (\coqdocvar{inhabited} \coqdocvar{True}). \coqdoctac{cbv}. \coqdoctac{eauto}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{intuition}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{inversion} \coqdocvar{H}. \coqdoctac{eauto}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+  Here is the big one, 
+  any inhabited prop must be true
+
+\begin{coqdoccode}
+\coqdocnoindent
+\coqdockw{Theorem} \coqdocvar{curry\_howard} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{P} : \coqdockw{Prop}),\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} \coqdocvar{P} \ensuremath{\leftrightarrow} \coqdocvar{P}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{split}; \coqdoctac{intros}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{destruct} \coqdocvar{H}; \coqdoctac{eauto}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{cbv}; \coqdoctac{eauto}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+
+
+  See how much this can simplify our proofs that 
+  proposition logic holds now that we have proven
+  that inhabitation is equivalent to prop
+
+\begin{coqdoccode}
+\coqdocnoindent
+\coqdockw{Ltac} \coqdocvar{CH} :=\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{split}; \coqdoctac{repeat} \coqdocvar{erewrite} \coqdocvar{curry\_howard}; \coqdoctac{eauto}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{both\_ways\_split\_inhabited'} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{Q} : \coqdockw{Prop}),\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} (\coqdocvar{P} \ensuremath{\land} \coqdocvar{Q}) \ensuremath{\leftrightarrow}\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} \coqdocvar{P} \ensuremath{\land} \coqdocvar{inhabited} \coqdocvar{Q}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{CH}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{either\_way\_split\_inhabited'} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{Q} : \coqdockw{Prop}),\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} (\coqdocvar{P} \ensuremath{\lor} \coqdocvar{Q}) \ensuremath{\leftrightarrow}\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} \coqdocvar{P} \ensuremath{\lor} \coqdocvar{inhabited} \coqdocvar{Q}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{CH}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{not\_exists\_inhabited\_not'} :\coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{P} : \coqdockw{Prop}),\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{\lnot} \coqdocvar{P} \ensuremath{\leftrightarrow}\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} (\~{} \coqdocvar{P}).\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{CH}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Example} \coqdocvar{inhabitation\_preservation'} :\coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{\ensuremath{\forall}} (\coqdocvar{P} \coqdocvar{C} : \coqdockw{Prop}),\coqdoceol
+\coqdocindent{1.00em}
+(\coqdocvar{P} \ensuremath{\rightarrow} \coqdocvar{C}) \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} \coqdocvar{P} \ensuremath{\rightarrow}\coqdoceol
+\coqdocindent{1.00em}
+\coqdocvar{inhabited} \coqdocvar{C}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{intros}; \coqdoctac{rewrite} \coqdocvar{curry\_howard} \coqdoctac{in} *; \coqdoctac{eauto}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\end{coqdoccode}
+\end{document}
