@@ -1,0 +1,159 @@
+\documentclass{book}
+
+% Packages for formatting and indexing
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{hyperref}
+\usepackage{makeidx}
+\makeindex
+
+% Custom environments
+\newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{corollary}[definition]{Corollary}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{example}[definition]{Example}
+\newtheorem{note}[definition]{Note}
+\newtheorem{proposition}[definition]{Proposition}
+
+
+% Custom commands for formatting and indexing
+\newcommand{\myref}[1]{\nameref{#1} (\textbf{\ref{#1}}) \index{\nameref{#1}}}
+
+% Creating custom environments to automatically do labels and index
+\newenvironment{mydefn}[1]{
+  \def\myarg{#1} 
+  \begin{definition}[#1]\label{defn:#1}
+}{
+  \index{\nameref{defn:\myarg}}
+  \end{definition}
+}
+
+\newenvironment{mylemma}[1]{
+  \def\myarg{#1} 
+  \begin{lemma}[#1]\label{lem:#1}
+}{
+  \index{\nameref{lem:\myarg}}
+  \end{lemma}
+}
+
+\newenvironment{mycorollary}[1]{
+  \def\myarg{#1} 
+  \begin{corollary}[#1]\label{cor:#1}
+}{
+  \index{\nameref{cor:\myarg}}
+  \end{corollary}
+}
+
+\newenvironment{mytheorem}[1]{
+  \def\myarg{#1} 
+  \begin{theorem}[#1]\label{thm:#1}
+}{
+  \index{\nameref{thm:\myarg}}
+  \end{theorem}
+}
+
+\newenvironment{myexample}[1]{
+  \def\myarg{#1} 
+  \begin{example}[#1]\label{ex:#1}
+}{
+  \index{\nameref{ex:\myarg}}
+  \end{example}
+}
+
+\newenvironment{mynote}[1]{
+  \def\myarg{#1} 
+  \begin{note}[#1]\label{note:#1}
+}{
+  \index{\nameref{note:\myarg}}
+  \end{note}
+}
+
+\newenvironment{myprop}[1]{
+  \def\myarg{#1} 
+  \begin{proposition}[#1]\label{prop:#1}
+}{
+  \index{\nameref{prop:\myarg}}
+  \end{proposition}
+}
+
+\begin{document}
+
+\frontmatter
+
+% Title page
+\title{My Math Textbook}
+\author{Your Name Here}
+\date{}
+\maketitle
+
+% Table of contents
+\tableofcontents
+
+\mainmatter
+
+% Introduction
+\chapter{Introduction}
+
+This is the introduction to my math textbook.
+
+% Chapter 1
+\chapter{Chapter One}
+
+This is the first chapter of my math textbook.
+
+\section{Section One}
+
+This is the first section of Chapter One.
+
+\begin{mydefn}{My Definition}
+  This is my definition
+\end{mydefn}
+
+% \begin{definition}[My Definition]\label{def:mydef}
+%   This is my definition.
+%   \indexdef{Definition!My Definition}
+% \end{definition}
+
+Here is a reference to \myref{defn:My Definition}.
+
+\begin{mytheorem}{My Theorem}
+  This is my theorem.
+\end{mytheorem}
+
+Here is a reference to \myref{thm:My Theorem}.
+
+\section{Section Two}
+
+This is the second section of Chapter One.
+
+\begin{myexample}{My Example}
+This is my example.
+\end{myexample}
+
+Here is a reference to \myref{ex:My Example}.
+
+% Chapter 2
+\chapter{Chapter Two}
+
+This is the second chapter of my math textbook.
+
+\section{Section One}
+
+This is the first section of Chapter Two.
+
+\begin{mylemma}{My Lemma}
+  This is my lemma.
+\end{mylemma}
+
+Here is a reference to \myref{lem:My Lemma}.
+
+\begin{myprop}{My Proposition}
+  This is my proposition.
+\end{myprop}
+
+Here is a reference to \myref{prop:My Proposition}.
+
+% Index
+\printindex
+
+\end{document}
