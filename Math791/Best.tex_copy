@@ -24,7 +24,7 @@
   \def\myarg{#1} 
   \begin{definition}[#1]\label{defn:#1}
 }{
-  \index{\myarg} 
+  \index{\nameref{defn:\myarg}}
   \end{definition}
 }
 
@@ -32,7 +32,7 @@
   \def\myarg{#1} 
   \begin{lemma}[#1]\label{lem:#1}
 }{
-  \index{\myarg} 
+  \index{\nameref{lem:\myarg}}
   \end{lemma}
 }
 
@@ -40,7 +40,7 @@
   \def\myarg{#1} 
   \begin{corollary}[#1]\label{cor:#1}
 }{
-  \index{\myarg} 
+  \index{\nameref{cor:\myarg}}
   \end{corollary}
 }
 
@@ -48,7 +48,7 @@
   \def\myarg{#1} 
   \begin{theorem}[#1]\label{thm:#1}
 }{
-  \index{\myarg} 
+  \index{\nameref{thm:\myarg}}
   \end{theorem}
 }
 
@@ -56,7 +56,7 @@
   \def\myarg{#1} 
   \begin{example}[#1]\label{ex:#1}
 }{
-  \index{\myarg} 
+  \index{\nameref{ex:\myarg}}
   \end{example}
 }
 
@@ -64,7 +64,7 @@
   \def\myarg{#1} 
   \begin{note}[#1]\label{note:#1}
 }{
-  \index{\myarg} 
+  \index{\nameref{note:\myarg}}
   \end{note}
 }
 
@@ -72,7 +72,7 @@
   \def\myarg{#1} 
   \begin{proposition}[#1]\label{prop:#1}
 }{
-  \index{\myarg} 
+  \index{\nameref{prop:\myarg}}
   \end{proposition}
 }
 
