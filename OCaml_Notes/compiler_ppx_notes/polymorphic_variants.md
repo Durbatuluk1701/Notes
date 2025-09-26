@@ -6,7 +6,7 @@ This document summarizes the key features of OCaml's polymorphic variants, which
 
 ## The Four Syntactic Forms
 
-Polymorphic variants have four main forms that define a type's constraints. Our discussion clarified their meanings as follows:
+Polymorphic variants have four main forms that define a type's constraints. 
 
 * **``[ `A | `B ]`` — The Exact Type**
     * **Meaning:** "Type has **exactly** `A` or `B`."
@@ -38,9 +38,7 @@ A key clarification was the direction of subtyping. For polymorphic variants, a 
 
 ## The Special Case: The Empty Variant `[]`
 
-We discussed your valid concern that the empty variant seems "dangerous." The resolution was understanding its unique role.
-
-Your final characterization was perfect: the empty variant is **type-theoretically valid, but the compiler will discharge it as uninhabitable, and thus there is no need to manage it.**
+The empty variant is **type-theoretically valid, but the compiler will discharge it as uninhabitable, and thus there is no need to manage it.**
 
 * **Safety via Impossibility:** The empty variant `[]` is safe precisely because it's **uninhabited**—you can never create a value of this type.
 * **Compiler Guarantees:** Because no value of type `[]` can exist, the compiler can prove that any code path that would handle such a value is **unreachable**.
